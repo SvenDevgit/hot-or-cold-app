@@ -1,22 +1,13 @@
-/*'use strict'*/
+'use strict'
 $(document).ready(function(){
-/*	
-$("form").submit(function(){
-    alert("Submitted");
-});
-*/ 	
 
 $( "form" ).on( "submit", false );
-/*
-$( "form" ).on( "submit", function( event ) {
-  event.preventDefault();
-});
-*/
 /* global variables */
 var gCount = 0;
 var gRandomNumber = Math.floor(Math.random() * 100);
+var userGuessesArr = [];
 
-console.log(gRandomNumber);
+/*console.log(gRandomNumber);*/
 
 	/*--- Display information modal box ---*/
   	$(".what").click(function(){
@@ -36,33 +27,44 @@ console.log(gRandomNumber);
   	});
 
   	/* -- register some events */
-/*
-  	$('#guessButton').on('click', function() {
-  		console.log($('#userGuess').val());
 
-  	});
-*/
-  	$('#guessButton').on('click',function(){
+ 	$('#guessButton').on('click',function(){
   		console.log($('#userGuess').val());
-  		var appendStuff = '<li>' + $('#userGuess').val() + '</li>';
+  		console.log('gCount' + gCount);
+      /* testing the some */
+      if ($('#userGuess').val() % 1 !== 0){
+        alert('please input a number');
+        return true;
+      }
+  		else if ($('#userGuess').val() < 0 || $('#userGuess').val() > 100){ 
+        alert('Choose an integer between 0 and 100.');   
+  	  }
+      else if (userGuessesArr.length > 0 && userGuessesArr.some(checkNumber)){
+        $('#userGuess').val('');
+        $('#userGuess').focus();
+        alert('This number was already given');
+      }     
+      else {  
+        var appendStuff = '<li>' + $('#userGuess').val() + '</li>';
         $('#guessList').append(appendStuff);
         gCount += 1;
-        $('#count').text(gCount);
+        $('#count').text(gCount); 
         guessFeedback(gRandomNumber ,$('#userGuess').val());
+        userGuessesArr.push($('#userGuess').val());
+        $( "form" ).on( "submit", function( event ) {
+               event.preventDefault();
+        });
+        $('#userGuess').val('');
+        $('#userGuess').focus();
+      }   
   	});
-
-
-
-
-});
 
     function guessFeedback(randomNumber, guessNumber){
     	console.log('randomNumber' + randomNumber +  'guessNumber' + guessNumber );
         var diff = Math.abs(randomNumber - guessNumber); 
     	console.log('diff' + diff);
     	if (diff > 50 )
-    	   { $('#feedback').text('Ice Cold');
-    	   }
+    	   { $('#feedback').text('Ice Cold');}
     	else if (diff > 25)
     	   { $('#feedback').text('Cold');}
         else if (diff > 15)
@@ -78,20 +80,23 @@ console.log(gRandomNumber);
 
     };
 
-  	function addGuess(){
-  	   console.log('itemValue');
-  	   /*	
-       var appendStuff = '<li>' + itemValue + '</li>';
-       $('#guessList').append(appendStuff);*/
-  	};
-
   	function newGame(){
-       gCount = 0;
+       gCount = resetCounter();
        gRandomNumber = Math.floor(Math.random() * 100);
        console.log(gRandomNumber);
        $('#count').text(gCount);
        $('#feedback').text('Make your Guess!');
        $('#guessList li').remove();
        $('#userGuess').val('');
+       userGuessesArr = [];
   	};
+    
+    function resetCounter( ) {
+      return 0;
+    }
 
+   function checkNumber(num) {
+     return num == $('#userGuess').val();
+   }
+
+});
